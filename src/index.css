@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #172332;
+  background: #f4f8fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+
+.app-shell {
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #f4f9fb 0%, #f8fafc 54%, #edf8f7 100%);
+}
+.ambient-shape { position: absolute; border-radius: 999px; pointer-events: none; filter: blur(1px); }
+.ambient-shape-one { width: 440px; height: 440px; right: -180px; top: 100px; background: rgba(207, 239, 237, .48); }
+.ambient-shape-two { width: 330px; height: 330px; left: -190px; bottom: -100px; background: rgba(233, 244, 247, .9); }
+
+.topbar {
+  height: 78px; padding: 0 max(28px, calc((100vw - 1120px) / 2));
+  background: rgba(255, 255, 255, .86); border-bottom: 1px solid rgba(201, 216, 222, .6);
+  display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2;
+}
+.brand { display: flex; align-items: center; gap: 11px; color: #172332; text-decoration: none; font-family: Manrope, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.7px; }
+.brand > span:last-child span { color: #0f8f96; }
+.brand-mark { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: #fff; background: #19bac2; box-shadow: 0 7px 14px rgba(25, 186, 194, .22); }
+.nav-links { display: flex; align-items: center; gap: 31px; }
+.nav-links a { color: #5f6f76; text-decoration: none; font-size: 14px; transition: color .2s ease; }
+.nav-links a:hover, .nav-links a.active { color: #172332; font-weight: 600; }
+.profile-button { border: 0; width: 35px; height: 35px; border-radius: 50%; color: #172332; background: #f29b76; font-weight: 700; box-shadow: inset 0 0 0 4px #fff; }
+
+.planner-section { max-width: 1120px; margin: 0 auto; padding: 61px 28px 46px; position: relative; z-index: 1; }
+.intro-block { margin-left: 79px; }
+.eyebrow, .card-label { color: #0d7d83; font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
+.eyebrow { display: flex; align-items: center; gap: 7px; margin-bottom: 15px; }
+.headline-row { display: flex; align-items: center; gap: 32px; }
+h1, h2, p { margin: 0; }
+h1 { color: #182737; font-family: Manrope, sans-serif; font-size: clamp(40px, 5vw, 59px); line-height: 1.04; letter-spacing: -2.8px; font-weight: 700; }
+h1 em { color: #0f8f96; font-style: normal; }
+.intro-block p { color: #5f6f76; font-size: 15px; line-height: 1.55; margin-top: 21px; }
+.shoe-illustration { width: 105px; height: 105px; border-radius: 43% 57% 52% 48%; color: #18b9bf; background: #d9f2f0; display: grid; place-items: center; transform: rotate(-13deg); margin-top: 22px; }
+.shoe-illustration svg { transform: rotate(13deg); }
+
+.planner-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(270px, .7fr); gap: 24px; align-items: stretch; margin: 52px 0 0; }
+.calendar-card, .action-card { border: 1px solid rgba(217, 228, 232, .7); box-shadow: 0 22px 55px rgba(50, 86, 97, .09); }
+.calendar-card { background: rgba(255,255,255,.96); border-radius: 26px; padding: 32px 35px 22px; }
+.calendar-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+.calendar-card h2, .action-card h2 { color: #1e2c3b; font-family: Manrope, sans-serif; font-weight: 700; letter-spacing: -1.1px; }
+.calendar-card h2 { font-size: 27px; margin-top: 7px; }
+.calendar-card h2 span { color: #5f6f76; font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.month-controls { display: flex; gap: 7px; }
+.month-controls button { width: 37px; height: 37px; border: 1px solid #e4ecee; border-radius: 11px; display: grid; place-items: center; color: #607179; background: #fff; transition: all .2s ease; }
+.month-controls button:hover { color: #fff; background: #0d7d83; border-color: #0d7d83; transform: translateY(-2px); }
+.weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
+.weekdays { color: #5f6f76; font-size: 12px; font-weight: 600; margin-bottom: 13px; }
+.day { position: relative; width: 100%; aspect-ratio: 1 / 1; max-width: 53px; justify-self: center; border: 1px solid transparent; border-radius: 17px; color: #53616b; background: transparent; font-size: 15px; transition: all .2s ease; }
+.day:hover { color: #0b7c82; background: #effafa; border-color: #c4edeb; }
+.day.planned { color: #1f7075; background: #d5f3f1; }
+.day.selected { color: #fff; background: #0d7d83; border-color: #0d7d83; box-shadow: 0 8px 16px rgba(13, 125, 131, .25); transform: translateY(-2px); }
+.day.planned.selected { color: #fff; background: #0d7d83; }
+.day-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #74cbc8; bottom: 7px; left: 50%; transform: translateX(-50%); }
+.day-dot.type-strength { background: #0d7d83; }
+.day-dot.type-cardio { background: #d06a4f; }
+.day-dot.type-stretch { background: #6b5fc4; }
+.day-dot.type-run { background: #2f8f4e; }
+.day-dot.type-other { background: #7b8b92; }
+.day.selected .day-dot { background: #fff; }
+.day.empty { pointer-events: none; }
+.calendar-legend { display: flex; justify-content: flex-end; gap: 18px; color: #5f6f76; font-size: 11px; margin-top: 21px; }
+.calendar-legend span { display: flex; gap: 6px; align-items: center; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.planned-dot { background: #b7e8e5; }
+.selected-dot { background: #0d7d83; }
+
+.action-card { position: relative; overflow: hidden; display: flex; flex-direction: column; background: #effaf9; border-color: #dbefee; border-radius: 26px; padding: 31px 28px 27px; }
+.action-card::after { content: ''; width: 190px; height: 190px; border-radius: 50%; background: rgba(255,255,255,.42); position: absolute; right: -79px; bottom: -70px; }
+.action-icon { width: 43px; height: 43px; color: #fff; background: #18b9c2; border-radius: 14px; display: grid; place-items: center; margin-bottom: 31px; box-shadow: 0 8px 16px rgba(24, 185, 194, .2); }
+.action-card .card-label { color: #2f6b6e; }
+.action-card h2 { font-size: 27px; margin-top: 10px; }
+.action-card p { color: #557075; font-size: 14px; line-height: 1.55; max-width: 240px; margin-top: 12px; }
+
+/* Кольори типів тренувань: використовуються і в календарі, і в картці дій. */
+.type-strength { --type-color: #0d7d83; --type-soft: #e2f5f4; }
+.type-cardio { --type-color: #c05a3f; --type-soft: #fdeee8; }
+.type-stretch { --type-color: #6b5fc4; --type-soft: #efedfb; }
+.type-run { --type-color: #2f8f4e; --type-soft: #e6f4ea; }
+.type-other { --type-color: #64777e; --type-soft: #eef2f3; }
+
+.workout-form, .workout-summary { display: flex; flex-direction: column; gap: 15px; margin-top: 18px; position: relative; z-index: 1; }
+.workout-summary { gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field-label { color: #2f6b6e; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.type-chip, .duration-chip { border: 1px solid #d3e4e5; border-radius: 11px; padding: 7px 10px; background: rgba(255,255,255,.78); color: #4b656b; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all .2s ease; }
+.type-chip:hover { color: var(--type-color); border-color: var(--type-color); }
+.type-chip.active { color: var(--type-color); border-color: var(--type-color); background: var(--type-soft); }
+.duration-chip:hover { color: #0d7d83; border-color: #0d7d83; }
+.duration-chip.active { color: #fff; border-color: #0d7d83; background: #0d7d83; }
+.chip-dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--type-color, #74cbc8); }
+.note-input { width: 100%; border: 1px solid #d3e4e5; border-radius: 12px; padding: 10px 12px; font: inherit; font-size: 13px; color: #172332; background: rgba(255,255,255,.86); transition: border-color .2s ease, box-shadow .2s ease; }
+.note-input::placeholder { color: #8ba1a6; }
+.note-input:focus { outline: none; border-color: #18b9c2; box-shadow: 0 0 0 3px rgba(24, 185, 194, .16); }
+.workout-summary-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.workout-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--type-soft); color: var(--type-color); font-size: 12px; font-weight: 700; }
+.workout-duration { color: #4b656b; font-size: 13px; font-weight: 600; }
+.workout-note { color: #557075; font-size: 13px; line-height: 1.5; max-width: none; margin: 0; }
+
+.action-footer { display: flex; flex-direction: column; gap: 13px; margin-top: auto; padding-top: 34px; position: relative; z-index: 1; }
+.insert-button, .remove-button { width: 100%; min-height: 48px; border-radius: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; transition: all .2s ease; }
+.insert-button { border: 0; background: #0d7d83; color: #fff; box-shadow: 0 10px 18px rgba(13, 125, 131, .2); }
+.insert-button:hover { background: #0a6a6f; transform: translateY(-2px); box-shadow: 0 13px 22px rgba(13, 125, 131, .3); }
+.remove-button { border: 1px solid #c7e5e3; background: rgba(255,255,255,.64); color: #2f6b6e; }
+.remove-button:hover { border-color: #e6b4ad; color: #a83a30; background: #fff7f5; transform: translateY(-2px); }
+.notice { display: flex; justify-content: center; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; }
+.notice.success { color: #1b7a43; }
+.notice.removed { color: #2f6b6e; }
+.hint { display: flex; align-items: center; gap: 7px; color: #557075; font-size: 12px; margin-top: auto; padding-top: 35px; }
+
+.stats-bar { display: flex; gap: 28px; margin: 14px 0 0 5px; }
+.stat { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.stat-value { font-family: Manrope, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -1px; color: #0d7d83; line-height: 1; }
+.stat-label { color: #5f6f76; font-size: 11px; letter-spacing: .4px; }
+
+.bottom-note { display: flex; gap: 10px; align-items: center; color: #5f6f76; font-size: 12px; margin: 23px 0 0 5px; }
+.bottom-note strong { color: #3f5961; font-weight: 700; }
+.note-check { width: 21px; height: 21px; display: grid; place-items: center; color: #4cbf7b; background: #d9f5e3; border-radius: 7px; }
+
+.fallback-shell { display: grid; place-items: center; padding: 24px; }
+.fallback-card { width: min(420px, 100%); padding: 34px 30px; border-radius: 24px; background: #fff; border: 1px solid #dbe9ea; box-shadow: 0 24px 60px rgba(23, 35, 50, .12); text-align: center; }
+.fallback-icon { width: 52px; height: 52px; margin: 0 auto 16px; display: grid; place-items: center; border-radius: 16px; color: #a83a30; background: #fff1ef; }
+.fallback-card h1 { font-family: Manrope, sans-serif; font-size: 24px; letter-spacing: -.6px; margin: 0; }
+.fallback-card p { color: #557075; font-size: 14px; line-height: 1.55; margin: 12px 0 24px; }
+.fallback-card .insert-button { max-width: 220px; margin: 0 auto; }
+
+@media (max-width: 760px) {
+  .stats-bar { gap: 18px; margin-top: 10px; }
+  .stat-value { font-size: 18px; }
+  .topbar { height: 68px; padding: 0 20px; }
+  .nav-links { gap: 15px; }
+  .nav-links a { display: none; }
+  .planner-section { padding: 39px 18px 34px; }
+  .intro-block { margin-left: 4px; }
+  .headline-row { justify-content: space-between; gap: 10px; }
+  h1 { font-size: clamp(39px, 12vw, 52px); }
+  .shoe-illustration { width: 80px; height: 80px; }
+  .planner-grid { grid-template-columns: 1fr; margin-top: 36px; }
+  .calendar-card { padding: 25px 17px 19px; border-radius: 22px; }
+  .action-card { min-height: 255px; border-radius: 22px; padding: 25px 22px; }
+  .action-icon { margin-bottom: 22px; }
+  .type-chip, .duration-chip { font-size: 11px; padding: 6px 8px; }
+  .workout-form, .workout-summary { margin-top: 15px; }
+  .action-footer { padding-top: 26px; }
+  .bottom-note { line-height: 1.4; align-items: flex-start; }
+}
+
+@media (max-width: 390px) {
+  .calendar-card h2 { font-size: 23px; }
+  .calendar-card h2 span { font-size: 14px; }
+  .weekdays, .calendar-grid { gap: 3px; }
+  .day { font-size: 14px; border-radius: 13px; }
+  .calendar-legend { gap: 9px; font-size: 10px; }
+}
