@@ -11,6 +11,12 @@ const Probe = () => {
   return <output>{workout?.done ? 'done' : 'planned'}</output>;
 };
 
+const CountProbe = () => {
+  const { plan } = useWorkoutPlan(new Date(2026, 10, 15));
+
+  return <output>{Object.keys(plan).length}</output>;
+};
+
 const storedPlan = (done: boolean) => ({
   '2026-11-04': { type: 'run', minutes: 40, note: '', done },
 });
@@ -63,5 +69,20 @@ describe('useWorkoutPlan', () => {
     });
 
     expect(container.textContent).toBe('planned');
+  });
+
+  it('перечитує план, коли сховище очистили в іншій вкладці', () => {
+    act(() => root.render(<CountProbe />));
+    expect(container.textContent).toBe('1');
+
+    act(() => {
+      localStorage.clear();
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: null, newValue: null }),
+      );
+    });
+
+    // Порожнє сховище знову дає демо-набір поточного місяця (13 днів).
+    expect(container.textContent).toBe('13');
   });
 });

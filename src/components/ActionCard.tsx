@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { CalendarDays, Check, ChevronRight, CircleMinus, Pencil, Plus, RotateCcw } from 'lucide-react';
 import { monthNamesGenitive } from '../lib/dates';
 import {
@@ -31,12 +31,24 @@ const ActionCard = ({
 }: ActionCardProps) => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Workout>(workout ?? defaultWorkout);
+  const previousSelection = useRef({ selectedDay, month });
 
-  // Новий день або зміна плану з іншої вкладки — скидаємо чернетку й режим редагування.
+  // Новий день або місяць — скидаємо чернетку й режим редагування.
+  // Зовнішнє оновлення плану не перебиває незавершене редагування того самого дня.
   useEffect(() => {
-    setEditing(false);
-    setDraft(workout ?? defaultWorkout);
-  }, [selectedDay, month, workout]);
+    const selectionChanged =
+      previousSelection.current.selectedDay !== selectedDay ||
+      previousSelection.current.month !== month;
+
+    previousSelection.current = { selectedDay, month };
+
+    if (selectionChanged) {
+      setEditing(false);
+      setDraft(workout ?? defaultWorkout);
+    } else if (!editing) {
+      setDraft(workout ?? defaultWorkout);
+    }
+  }, [selectedDay, month, workout, editing]);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,21 +67,27 @@ const ActionCard = ({
     setEditing(false);
   };
 
+  // Якщо в даних є нестандартна тривалість (наприклад, 40 хв із демо-набору),
+  // показуємо її окремим чипом, щоб поточне значення не губилося під час редагування.
+  const durationChoices = durationOptions.includes(draft.minutes)
+    ? durationOptions
+    : [...durationOptions, draft.minutes].sort((left, right) => left - right);
+
   const noticeContent =
     notice === 'inserted' ? (
-      <div className="notice success"><Check size={17} /> Тренування додано</div>
+      <div className="notice success" role="status"><Check size={17} /> Тренування додано</div>
     ) : notice === 'updated' ? (
-      <div className="notice success"><Check size={17} /> Тренування оновлено</div>
+      <div className="notice success" role="status"><Check size={17} /> Тренування оновлено</div>
     ) : notice === 'done' ? (
-      <div className="notice success"><Check size={17} /> Тренування виконано</div>
+      <div className="notice success" role="status"><Check size={17} /> Тренування виконано</div>
     ) : notice === 'undone' ? (
-      <div className="notice removed"><RotateCcw size={16} /> Позначку виконання знято</div>
+      <div className="notice removed" role="status"><RotateCcw size={16} /> Позначку виконання знято</div>
     ) : notice === 'removed' ? (
-      <div className="notice removed"><CircleMinus size={17} /> Тренування прибрано</div>
+      <div className="notice removed" role="status"><CircleMinus size={17} /> Тренування прибрано</div>
     ) : null;
 
   return (
-    <aside className="action-card" aria-live="polite">
+    <aside className="action-card">
       <div className="action-icon"><Plus size={21} /></div>
       <span className="card-label">НОВЕ ЗАНЯТТЯ</span>
       <h2>{selectedDay ? `${selectedDay} ${monthNamesGenitive[month]}` : 'Обери свій день'}</h2>
@@ -147,7 +165,7 @@ const ActionCard = ({
           <div className="field">
             <span className="field-label" id="workout-duration-label">Тривалість</span>
             <div className="chips" role="group" aria-labelledby="workout-duration-label">
-              {durationOptions.map((minutes) => (
+              {durationChoices.map((minutes) => (
                 <button
                   key={minutes}
                   type="button"
@@ -184,7 +202,7 @@ const ActionCard = ({
                 Скасувати
               </button>
             )}
-            {noticeContent}
+            {!editing && noticeContent}
           </div>
         </form>
       )}

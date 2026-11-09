@@ -18,10 +18,33 @@ button, a { font: inherit; }
 button { cursor: pointer; }
 
 .app-shell {
+  --accent: #0d7d83;
+  --accent-strong: #0a6a6f;
+  --accent-bright: #18b9c2;
+  --accent-soft: #d5f3f1;
+  --accent-mist: #effaf9;
+  --accent-shadow: rgba(13, 125, 131, .22);
   min-height: 100vh;
   overflow: hidden;
   position: relative;
   background: linear-gradient(135deg, #f4f9fb 0%, #f8fafc 54%, #edf8f7 100%);
+}
+/* Сезонний акцент: змінюється разом із місяцем у календарі. */
+.app-shell[data-season='winter'] {
+  --accent: #1f7f9c; --accent-strong: #165d73; --accent-bright: #4aa8c4;
+  --accent-soft: #e0f1f8; --accent-mist: #f0f8fc; --accent-shadow: rgba(31, 127, 156, .22);
+}
+.app-shell[data-season='spring'] {
+  --accent: #267a42; --accent-strong: #1c5c31; --accent-bright: #4caf6e;
+  --accent-soft: #e5f4ea; --accent-mist: #f1faf4; --accent-shadow: rgba(38, 122, 66, .22);
+}
+.app-shell[data-season='summer'] {
+  --accent: #0b737a; --accent-strong: #085a60; --accent-bright: #18b9c2;
+  --accent-soft: #dcf3f3; --accent-mist: #eefaf9; --accent-shadow: rgba(11, 115, 122, .22);
+}
+.app-shell[data-season='autumn'] {
+  --accent: #a8641f; --accent-strong: #7f4a12; --accent-bright: #cf9448;
+  --accent-soft: #fbf0e1; --accent-mist: #fdf7ee; --accent-shadow: rgba(168, 100, 31, .22);
 }
 .ambient-shape { position: absolute; border-radius: 999px; pointer-events: none; filter: blur(1px); }
 .ambient-shape-one { width: 440px; height: 440px; right: -180px; top: 100px; background: rgba(207, 239, 237, .48); }
@@ -33,27 +56,33 @@ button { cursor: pointer; }
   display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2;
 }
 .brand { display: flex; align-items: center; gap: 11px; color: #172332; text-decoration: none; font-family: Manrope, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.7px; }
-.brand > span:last-child span { color: #0f8f96; }
-.brand-mark { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: #fff; background: #19bac2; box-shadow: 0 7px 14px rgba(25, 186, 194, .22); }
+.brand > span:last-child span { color: var(--accent); }
+.brand-mark { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: #fff; background: var(--accent-bright); box-shadow: 0 7px 14px var(--accent-shadow); }
 .nav-links { display: flex; align-items: center; gap: 31px; }
 .nav-links a { color: #5f6f76; text-decoration: none; font-size: 14px; transition: color .2s ease; }
 .nav-links a:hover, .nav-links a.active { color: #172332; font-weight: 600; }
-.profile-button { border: 0; width: 35px; height: 35px; border-radius: 50%; color: #172332; background: #f29b76; font-weight: 700; box-shadow: inset 0 0 0 4px #fff; }
+.profile-button { border: 0; width: 35px; height: 35px; border-radius: 50%; color: #172332; background: #f29b76; font-weight: 700; box-shadow: inset 0 0 0 4px #fff; display: grid; place-items: center; }
 
-.planner-section { max-width: 1120px; margin: 0 auto; padding: 61px 28px 46px; position: relative; z-index: 1; }
+.planner-section {
+  max-width: 1120px; margin: 0 auto; padding: 61px 28px 46px; position: relative; z-index: 1;
+  /* Делікатна «паперова» крапкова сітка; колір підлаштовується під сезонний акцент. */
+  background-image: radial-gradient(circle, rgba(23, 35, 50, .05) 1px, transparent 1px);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--accent) 6%, transparent) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
 .intro-block { margin-left: 79px; }
-.eyebrow, .card-label { color: #0d7d83; font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
+.eyebrow, .card-label { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
 .eyebrow { display: flex; align-items: center; gap: 7px; margin-bottom: 15px; }
 .headline-row { display: flex; align-items: center; gap: 32px; }
 h1, h2, p { margin: 0; }
 h1 { color: #182737; font-family: Manrope, sans-serif; font-size: clamp(40px, 5vw, 59px); line-height: 1.04; letter-spacing: -2.8px; font-weight: 700; }
-h1 em { color: #0f8f96; font-style: normal; }
+h1 em { color: var(--accent); font-style: normal; }
 .intro-block p { color: #5f6f76; font-size: 15px; line-height: 1.55; margin-top: 21px; }
-.shoe-illustration { width: 105px; height: 105px; border-radius: 43% 57% 52% 48%; color: #18b9bf; background: #d9f2f0; display: grid; place-items: center; transform: rotate(-13deg); margin-top: 22px; }
+.shoe-illustration { width: 105px; height: 105px; border-radius: 43% 57% 52% 48%; color: var(--accent-bright); background: var(--accent-soft); display: grid; place-items: center; transform: rotate(-13deg); margin-top: 22px; }
 .shoe-illustration svg { transform: rotate(13deg); }
 
 .planner-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(270px, .7fr); gap: 24px; align-items: stretch; margin: 52px 0 0; }
-.calendar-card, .action-card { border: 1px solid rgba(217, 228, 232, .7); box-shadow: 0 22px 55px rgba(50, 86, 97, .09); }
+.calendar-card, .action-card { border: 1px solid rgba(217, 228, 232, .7); box-shadow: 0 22px 55px rgba(50, 86, 97, .09), 0 3px 8px rgba(50, 86, 97, .045); }
 .calendar-card { background: rgba(255,255,255,.96); border-radius: 26px; padding: 32px 35px 22px; }
 .calendar-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
 .calendar-card h2, .action-card h2 { color: #1e2c3b; font-family: Manrope, sans-serif; font-weight: 700; letter-spacing: -1.1px; }
@@ -61,15 +90,15 @@ h1 em { color: #0f8f96; font-style: normal; }
 .calendar-card h2 span { color: #5f6f76; font-size: 16px; font-weight: 500; letter-spacing: 0; }
 .month-controls { display: flex; gap: 7px; }
 .month-controls button { width: 37px; height: 37px; border: 1px solid #e4ecee; border-radius: 11px; display: grid; place-items: center; color: #607179; background: #fff; transition: all .2s ease; }
-.month-controls button:hover { color: #fff; background: #0d7d83; border-color: #0d7d83; transform: translateY(-2px); }
+.month-controls button:hover { color: #fff; background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
 .weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
 .weekdays { color: #5f6f76; font-size: 12px; font-weight: 600; margin-bottom: 13px; }
 .day { position: relative; width: 100%; aspect-ratio: 1 / 1; max-width: 53px; justify-self: center; border: 1px solid transparent; border-radius: 17px; color: #53616b; background: transparent; font-size: 15px; transition: all .2s ease; }
-.day:hover { color: #0b7c82; background: #effafa; border-color: #c4edeb; }
-.day.planned { color: #1f7075; background: #d5f3f1; }
+.day:hover { color: var(--accent-strong); background: var(--accent-mist); border-color: var(--accent-soft); }
+.day.planned { color: var(--accent-strong); background: var(--accent-soft); }
 .day.done { color: #1f6b3f; background: #e4f6ea; }
-.day.selected { color: #fff; background: #0d7d83; border-color: #0d7d83; box-shadow: 0 8px 16px rgba(13, 125, 131, .25); transform: translateY(-2px); }
-.day.planned.selected { color: #fff; background: #0d7d83; }
+.day.selected { color: #fff; background: var(--accent); border-color: var(--accent); box-shadow: 0 8px 16px var(--accent-shadow); transform: translateY(-2px); }
+.day.planned.selected { color: #fff; background: var(--accent); }
 .day-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #74cbc8; bottom: 7px; left: 50%; transform: translateX(-50%); }
 .day-dot.type-strength { background: #0d7d83; }
 .day-dot.type-cardio { background: #d06a4f; }
@@ -84,12 +113,12 @@ h1 em { color: #0f8f96; font-style: normal; }
 .calendar-legend span { display: flex; gap: 6px; align-items: center; }
 .legend-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 .planned-dot { background: #b7e8e5; }
-.selected-dot { background: #0d7d83; }
+.selected-dot { background: var(--accent); }
 
-.action-card { position: relative; overflow: hidden; display: flex; flex-direction: column; background: #effaf9; border-color: #dbefee; border-radius: 26px; padding: 31px 28px 27px; }
+.action-card { position: relative; overflow: hidden; display: flex; flex-direction: column; background: var(--accent-mist); border-color: var(--accent-soft); border-radius: 26px; padding: 31px 28px 27px; }
 .action-card::after { content: ''; width: 190px; height: 190px; border-radius: 50%; background: rgba(255,255,255,.42); position: absolute; right: -79px; bottom: -70px; }
-.action-icon { width: 43px; height: 43px; color: #fff; background: #18b9c2; border-radius: 14px; display: grid; place-items: center; margin-bottom: 31px; box-shadow: 0 8px 16px rgba(24, 185, 194, .2); }
-.action-card .card-label { color: #2f6b6e; }
+.action-icon { width: 43px; height: 43px; color: #fff; background: var(--accent-bright); border-radius: 14px; display: grid; place-items: center; margin-bottom: 31px; box-shadow: 0 8px 16px var(--accent-shadow); }
+.action-card .card-label { color: var(--accent-strong); }
 .action-card h2 { font-size: 27px; margin-top: 10px; }
 .action-card p { color: #557075; font-size: 14px; line-height: 1.55; max-width: 240px; margin-top: 12px; }
 
@@ -108,26 +137,26 @@ h1 em { color: #0f8f96; font-style: normal; }
 .type-chip, .duration-chip { border: 1px solid #d3e4e5; border-radius: 11px; padding: 7px 10px; background: rgba(255,255,255,.78); color: #4b656b; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all .2s ease; }
 .type-chip:hover { color: var(--type-color); border-color: var(--type-color); }
 .type-chip.active { color: var(--type-color); border-color: var(--type-color); background: var(--type-soft); }
-.duration-chip:hover { color: #0d7d83; border-color: #0d7d83; }
-.duration-chip.active { color: #fff; border-color: #0d7d83; background: #0d7d83; }
+.duration-chip:hover { color: var(--accent); border-color: var(--accent); }
+.duration-chip.active { color: #fff; border-color: var(--accent); background: var(--accent); }
 .chip-dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--type-color, #74cbc8); }
 .note-input { width: 100%; border: 1px solid #d3e4e5; border-radius: 12px; padding: 10px 12px; font: inherit; font-size: 13px; color: #172332; background: rgba(255,255,255,.86); transition: border-color .2s ease, box-shadow .2s ease; }
 .note-input::placeholder { color: #8ba1a6; }
-.note-input:focus { outline: none; border-color: #18b9c2; box-shadow: 0 0 0 3px rgba(24, 185, 194, .16); }
+.note-input:focus { outline: none; border-color: var(--accent-bright); box-shadow: 0 0 0 3px var(--accent-soft); }
 .workout-summary-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
 .workout-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--type-soft); color: var(--type-color); font-size: 12px; font-weight: 700; }
 .workout-duration { color: #4b656b; font-size: 13px; font-weight: 600; }
-.workout-note { color: #557075; font-size: 13px; line-height: 1.5; max-width: none; margin: 0; }
+.workout-note { color: #557075; font-size: 13px; line-height: 1.5; max-width: none; margin: 0; overflow-wrap: anywhere; }
 .done-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; background: #dff5e6; color: #1f7a43; font-size: 12px; font-weight: 700; }
 .secondary-actions { display: flex; gap: 9px; }
 .ghost-button { flex: 1; min-height: 42px; border: 1px solid #c7e5e3; border-radius: 13px; background: rgba(255,255,255,.64); color: #2f6b6e; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all .2s ease; }
-.ghost-button:hover { border-color: #0d7d83; color: #0d7d83; background: #fff; transform: translateY(-2px); }
+.ghost-button:hover { border-color: var(--accent); color: var(--accent); background: #fff; transform: translateY(-2px); }
 .ghost-button.danger:hover { border-color: #e6b4ad; color: #a83a30; background: #fff7f5; }
 
 .action-footer { display: flex; flex-direction: column; gap: 13px; margin-top: auto; padding-top: 34px; position: relative; z-index: 1; }
 .insert-button, .remove-button { width: 100%; min-height: 48px; border-radius: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; transition: all .2s ease; }
-.insert-button { border: 0; background: #0d7d83; color: #fff; box-shadow: 0 10px 18px rgba(13, 125, 131, .2); }
-.insert-button:hover { background: #0a6a6f; transform: translateY(-2px); box-shadow: 0 13px 22px rgba(13, 125, 131, .3); }
+.insert-button { border: 0; background: var(--accent); color: #fff; box-shadow: 0 10px 18px var(--accent-shadow); }
+.insert-button:hover { background: var(--accent-strong); transform: translateY(-2px); box-shadow: 0 13px 22px var(--accent-shadow); }
 .remove-button { border: 1px solid #c7e5e3; background: rgba(255,255,255,.64); color: #2f6b6e; }
 .remove-button:hover { border-color: #e6b4ad; color: #a83a30; background: #fff7f5; transform: translateY(-2px); }
 .notice { display: flex; justify-content: center; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; }
@@ -137,7 +166,7 @@ h1 em { color: #0f8f96; font-style: normal; }
 
 .stats-bar { display: flex; gap: 28px; margin: 14px 0 0 5px; }
 .stat { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-.stat-value { font-family: Manrope, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -1px; color: #0d7d83; line-height: 1; }
+.stat-value { font-family: Manrope, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -1px; color: var(--accent); line-height: 1; }
 .stat-label { color: #5f6f76; font-size: 11px; letter-spacing: .4px; }
 
 .bottom-note { display: flex; gap: 10px; align-items: center; color: #5f6f76; font-size: 12px; margin: 23px 0 0 5px; }
@@ -178,4 +207,14 @@ h1 em { color: #0f8f96; font-style: normal; }
   .weekdays, .calendar-grid { gap: 3px; }
   .day { font-size: 14px; border-radius: 13px; }
   .calendar-legend { gap: 9px; font-size: 10px; }
+}
+
+/* Поважаємо системне налаштування зменшення руху. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }

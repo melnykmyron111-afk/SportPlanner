@@ -9,7 +9,7 @@ const Topbar = () => (
     <div className="nav-links">
       <a className="active" href="#planner">План</a>
       <a href="#tips">Поради</a>
-      <button className="profile-button" aria-label="Відкрити профіль">А</button>
+      <span className="profile-button" aria-hidden="true">А</span>
     </div>
   </nav>
 );

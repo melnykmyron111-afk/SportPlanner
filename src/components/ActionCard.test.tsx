@@ -104,6 +104,17 @@ describe('ActionCard', () => {
     expect(container.textContent).toContain('Ноги');
   });
 
+  it('показує нестандартну тривалість окремим активним чипом', () => {
+    renderCard({ workout: { type: 'run', minutes: 40, note: '', done: false } });
+
+    act(() => findButton(container, 'Редагувати')?.click());
+
+    const chip = findButton(container, '40 хв');
+    expect(chip).not.toBeUndefined();
+    expect(chip?.className).toContain('active');
+    expect(chip?.getAttribute('aria-pressed')).toBe('true');
+  });
+
   it('викликає видалення для запланованого дня', () => {
     const { onRemove } = renderCard({
       workout: { type: 'run', minutes: 40, note: '', done: false },
@@ -140,5 +151,48 @@ describe('ActionCard', () => {
 
     expect(container.querySelector('form')).toBeNull();
     expect(container.textContent).toContain('Вибір дати займає секунду');
+  });
+
+  it('ховає старе сповіщення під час редагування', () => {
+    renderCard({
+      workout: { type: 'run', minutes: 40, note: '', done: true },
+      notice: 'done',
+    });
+
+    expect(container.textContent).toContain('Тренування виконано');
+
+    act(() => findButton(container, 'Редагувати')?.click());
+
+    expect(container.textContent).not.toContain('Тренування виконано');
+  });
+
+  it('показує сповіщення про видалення у формі', () => {
+    renderCard({ workout: undefined, notice: 'removed' });
+
+    expect(container.textContent).toContain('Тренування прибрано');
+  });
+
+  it('не скидає незавершене редагування при зовнішньому оновленні плану', () => {
+    const onSave = vi.fn();
+    const props = {
+      selectedDay: 5,
+      month: 10,
+      notice: 'idle' as Notice,
+      onSave,
+      onToggleDone: vi.fn(),
+      onRemove: vi.fn(),
+    };
+    const first: Workout = { type: 'run', minutes: 40, note: '', done: false };
+
+    act(() => root.render(<ActionCard {...props} workout={first} />));
+    act(() => findButton(container, 'Редагувати')?.click());
+
+    const input = container.querySelector('input') as HTMLInputElement;
+    act(() => setInputValue(input, 'Чернетка'));
+
+    act(() => root.render(<ActionCard {...props} workout={{ ...first, note: 'З іншої вкладки' }} />));
+
+    expect(container.querySelector('form')).not.toBeNull();
+    expect((container.querySelector('input') as HTMLInputElement).value).toBe('Чернетка');
   });
 });

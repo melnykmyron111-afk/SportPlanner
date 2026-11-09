@@ -4,8 +4,10 @@ import ActionCard from './components/ActionCard';
 import CalendarCard from './components/CalendarCard';
 import Topbar from './components/Topbar';
 import { useWorkoutPlan } from './hooks/useWorkoutPlan';
+import { useToday } from './hooks/useToday';
 import { dateKey, getCalendarDays } from './lib/dates';
 import { countDoneInMonth, countInMonth, currentStreak, monthProgress } from './lib/stats';
+import { seasonForMonth } from './lib/theme';
 import type { Notice, Workout } from './types';
 
 // Фіксуємо дату відкриття застосунку, щоб місяць, рік і демо-набір були узгоджені.
@@ -17,6 +19,7 @@ function App() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [notice, setNotice] = useState<Notice>('idle');
   const { plan, saveWorkout, toggleWorkoutDone, removeWorkout } = useWorkoutPlan(appStart);
+  const today = useToday();
 
   const days = useMemo(() => getCalendarDays(year, month), [month, year]);
 
@@ -60,11 +63,11 @@ function App() {
 
   const plannedCount = countInMonth(plan, year, month);
   const doneCount = countDoneInMonth(plan, year, month);
-  const streak = currentStreak(plan, appStart);
-  const progress = monthProgress(plan, appStart);
+  const streak = currentStreak(plan, today);
+  const progress = monthProgress(plan, year, month);
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" data-season={seasonForMonth(month)}>
       <div className="ambient-shape ambient-shape-one" />
       <div className="ambient-shape ambient-shape-two" />
 
@@ -104,7 +107,7 @@ function App() {
           />
         </div>
 
-        <div className="stats-bar" aria-label="Статистика місяця">
+        <div className="stats-bar" aria-label="Статистика тренувань">
           <div className="stat"><span className="stat-value">{doneCount}</span><span className="stat-label">з {plannedCount} запланованих</span></div>
           <div className="stat"><span className="stat-value">{streak}</span><span className="stat-label">серія днів</span></div>
           <div className="stat"><span className="stat-value">{progress}%</span><span className="stat-label">до цілі</span></div>

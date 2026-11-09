@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { loadPlan, readPlan, savePlan, STORAGE_KEY } from '../lib/storage';
+import { normalizeWorkout } from '../lib/workouts';
 import type { Workout, WorkoutPlan } from '../types';
 
 const isSameWorkout = (left: Workout, right: Workout) =>
@@ -24,19 +25,36 @@ const isSamePlan = (left: WorkoutPlan, right: WorkoutPlan) => {
  */
 export const useWorkoutPlan = (now: Date) => {
   const [plan, setPlan] = useState<WorkoutPlan>(() => loadPlan(now));
+  const initialPlan = useRef(plan);
 
   useEffect(() => {
+    // Не перезаписуємо сховище одразу після відкриття: інакше можна
+    // затерти свіжіші зміни, які інша вкладка зробила під час завантаження.
+    if (plan === initialPlan.current) return;
+
     savePlan(plan);
   }, [plan]);
 
   useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== STORAGE_KEY) return;
-
+    const sync = (raw: string | null) => {
       setPlan((current) => {
-        const next = readPlan(event.newValue, now);
+        const next = readPlan(raw, now);
         return isSamePlan(current, next) ? current : next;
       });
+    };
+
+    // Наздоганяємо зміни, які інша вкладка могла зробити до підписки.
+    try {
+      sync(localStorage.getItem(STORAGE_KEY));
+    } catch {
+      // Сховище недоступне — працюємо з поточним станом у памʼяті.
+    }
+
+    const handleStorage = (event: StorageEvent) => {
+      // `key === null` — у іншій вкладці очистили все сховище.
+      if (event.key !== null && event.key !== STORAGE_KEY) return;
+
+      sync(event.newValue);
     };
 
     window.addEventListener('storage', handleStorage);
@@ -44,14 +62,12 @@ export const useWorkoutPlan = (now: Date) => {
   }, [now]);
 
   const saveWorkout = useCallback((key: string, workout: Workout) => {
+    const normalized = normalizeWorkout(workout);
+    if (!normalized) return;
+
     setPlan((current) => ({
       ...current,
-      [key]: {
-        type: workout.type,
-        minutes: workout.minutes,
-        note: workout.note.trim(),
-        done: workout.done,
-      },
+      [key]: normalized,
     }));
   }, []);
 

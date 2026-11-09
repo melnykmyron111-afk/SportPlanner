@@ -50,12 +50,17 @@ const parsePlan = (raw: string): WorkoutPlan | null => {
 
   if (!isPlainObject(parsed)) return null;
 
+  const entries = Object.entries(parsed);
   const plan: WorkoutPlan = {};
-  for (const [key, value] of Object.entries(parsed)) {
+  for (const [key, value] of entries) {
     if (!isValidDateKey(key)) continue;
     const workout = normalizeWorkout(value);
     if (workout) plan[key] = workout;
   }
+
+  // Порожній обʼєкт — це свідомо очищений план. А от непорожній обʼєкт
+  // без жодного валідного ключа вважаємо пошкодженим, щоб не втратити дані.
+  if (entries.length > 0 && Object.keys(plan).length === 0) return null;
 
   return plan;
 };
@@ -104,7 +109,11 @@ export const loadPlan = (now: Date): WorkoutPlan => {
 
   try {
     const current = localStorage.getItem(STORAGE_KEY);
-    if (current !== null) return parsePlan(current) ?? seed();
+    if (current !== null) {
+      const parsed = parsePlan(current);
+      if (parsed) return parsed;
+      // Пошкоджений v3 не має губити дані: пробуємо відновитися зі старих форматів.
+    }
 
     const legacyV2 = localStorage.getItem(LEGACY_V2_KEY);
     if (legacyV2 !== null) {

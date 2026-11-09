@@ -104,6 +104,20 @@ describe('loadPlan', () => {
     expect(loadPlan(now)).toEqual(createSeedPlan(now));
   });
 
+  it('відновлюється зі старого формату, якщо v3 пошкоджений', () => {
+    localStorage.setItem(STORAGE_KEY, '{oops');
+    localStorage.setItem(LEGACY_V2_KEY, JSON.stringify(['2026-11-04']));
+
+    expect(loadPlan(now)).toEqual({ '2026-11-04': workout('other', 30) });
+  });
+
+  it('не вважає непорожній обʼєкт без дат порожнім планом', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ foo: workout(), bar: 1 }));
+    localStorage.setItem(LEGACY_V2_KEY, JSON.stringify(['2026-11-04']));
+
+    expect(loadPlan(now)).toEqual({ '2026-11-04': workout('other', 30) });
+  });
+
   it('мігрує масив v2 у тренування типу «інше»', () => {
     localStorage.setItem(LEGACY_V2_KEY, JSON.stringify(['2026-11-04', '2026-11-20']));
 

@@ -29,7 +29,9 @@ export const currentStreak = (plan: WorkoutPlan, today: Date, maxGap = 1): numbe
   let streak = 0;
   let gap = 0;
 
-  for (let i = 0; i < 366; i++) {
+  // Без штучного обмеження в рік: серія може бути довшою.
+  // Цикл завершується, щойно пропусків стає більше за maxGap.
+  for (;;) {
     const done = plan[dateKey(cursor.getFullYear(), cursor.getMonth(), cursor.getDate())]?.done;
 
     if (done) {
@@ -47,7 +49,14 @@ export const currentStreak = (plan: WorkoutPlan, today: Date, maxGap = 1): numbe
 };
 
 /** Прогрес до місячної цілі за виконаними тренуваннями (за замовчуванням ціль — 12). */
-export const monthProgress = (plan: WorkoutPlan, now: Date, goal = 12): number => {
-  const done = countDoneInMonth(plan, now.getFullYear(), now.getMonth());
+export const monthProgress = (
+  plan: WorkoutPlan,
+  year: number,
+  month: number,
+  goal = 12,
+): number => {
+  if (goal <= 0) return 0;
+
+  const done = countDoneInMonth(plan, year, month);
   return Math.min(100, Math.round((done / goal) * 100));
 };
