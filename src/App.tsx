@@ -5,7 +5,7 @@ import CalendarCard from './components/CalendarCard';
 import Topbar from './components/Topbar';
 import { useWorkoutPlan } from './hooks/useWorkoutPlan';
 import { dateKey, getCalendarDays } from './lib/dates';
-import { countInMonth, currentStreak, monthProgress } from './lib/stats';
+import { countDoneInMonth, countInMonth, currentStreak, monthProgress } from './lib/stats';
 import type { Notice, Workout } from './types';
 
 // Фіксуємо дату відкриття застосунку, щоб місяць, рік і демо-набір були узгоджені.
@@ -16,7 +16,7 @@ function App() {
   const [year, setYear] = useState(() => appStart.getFullYear());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [notice, setNotice] = useState<Notice>('idle');
-  const { plan, saveWorkout, removeWorkout } = useWorkoutPlan(appStart);
+  const { plan, saveWorkout, toggleWorkoutDone, removeWorkout } = useWorkoutPlan(appStart);
 
   const days = useMemo(() => getCalendarDays(year, month), [month, year]);
 
@@ -50,6 +50,18 @@ function App() {
     removeWorkout(selectedKey);
     setNotice('removed');
   };
+
+  const toggleSelectedDone = () => {
+    if (!selectedKey || !selectedWorkout) return;
+
+    toggleWorkoutDone(selectedKey);
+    setNotice(selectedWorkout.done ? 'undone' : 'done');
+  };
+
+  const plannedCount = countInMonth(plan, year, month);
+  const doneCount = countDoneInMonth(plan, year, month);
+  const streak = currentStreak(plan, appStart);
+  const progress = monthProgress(plan, appStart);
 
   return (
     <main className="app-shell">
@@ -87,14 +99,15 @@ function App() {
             workout={selectedWorkout}
             notice={notice}
             onSave={saveSelectedWorkout}
+            onToggleDone={toggleSelectedDone}
             onRemove={removeSelectedWorkout}
           />
         </div>
 
         <div className="stats-bar" aria-label="Статистика місяця">
-          <div className="stat"><span className="stat-value">{countInMonth(plan, year, month)}</span><span className="stat-label">тренувань</span></div>
-          <div className="stat"><span className="stat-value">{currentStreak(plan, appStart)}</span><span className="stat-label">серія днів</span></div>
-          <div className="stat"><span className="stat-value">{monthProgress(plan, appStart)}%</span><span className="stat-label">до цілі</span></div>
+          <div className="stat"><span className="stat-value">{doneCount}</span><span className="stat-label">з {plannedCount} запланованих</span></div>
+          <div className="stat"><span className="stat-value">{streak}</span><span className="stat-label">серія днів</span></div>
+          <div className="stat"><span className="stat-value">{progress}%</span><span className="stat-label">до цілі</span></div>
         </div>
 
         <div className="bottom-note" id="tips">

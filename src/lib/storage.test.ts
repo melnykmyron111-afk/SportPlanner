@@ -13,10 +13,16 @@ import {
 
 const now = new Date(2026, 10, 15);
 
-const workout = (type: Workout['type'] = 'strength', minutes = 45, note = ''): Workout => ({
+const workout = (
+  type: Workout['type'] = 'strength',
+  minutes = 45,
+  note = '',
+  done = false,
+): Workout => ({
   type,
   minutes,
   note,
+  done,
 });
 
 // Ключ у форматі v1: місяць — індекс з нуля, без доповнення нулями.
@@ -181,12 +187,19 @@ describe('savePlan', () => {
 
   it('після збереження дані читаються без змін', () => {
     const plan = {
-      '2026-11-04': workout('strength', 45, 'Ноги'),
+      '2026-11-04': workout('strength', 45, 'Ноги', true),
       '2026-11-20': workout('cardio', 30),
     };
     savePlan(plan);
 
     expect(loadPlan(now)).toEqual(plan);
+  });
+
+  it('зберігає позначку виконання', () => {
+    savePlan({ '2026-11-04': workout('run', 40, '', true) });
+
+    expect((storedV3() as Record<string, Workout>)['2026-11-04'].done).toBe(true);
+    expect(loadPlan(now)['2026-11-04'].done).toBe(true);
   });
 });
 

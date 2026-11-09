@@ -10,6 +10,7 @@ type Props = {
   workout?: Workout;
   notice: Notice;
   onSave: (workout: Workout) => void;
+  onToggleDone: () => void;
   onRemove: () => void;
 };
 
@@ -42,6 +43,7 @@ describe('ActionCard', () => {
 
   const renderCard = (props: Partial<Props> = {}) => {
     const onSave = props.onSave ?? vi.fn();
+    const onToggleDone = props.onToggleDone ?? vi.fn();
     const onRemove = props.onRemove ?? vi.fn();
 
     act(() => {
@@ -52,16 +54,17 @@ describe('ActionCard', () => {
           notice="idle"
           {...props}
           onSave={onSave}
+          onToggleDone={onToggleDone}
           onRemove={onRemove}
         />,
       );
     });
 
-    return { onSave, onRemove };
+    return { onSave, onToggleDone, onRemove };
   };
 
   it('показує деталі наявного тренування', () => {
-    renderCard({ workout: { type: 'cardio', minutes: 30, note: 'Інтервали' } });
+    renderCard({ workout: { type: 'cardio', minutes: 30, note: 'Інтервали', done: false } });
 
     expect(container.textContent).toContain('Кардіо');
     expect(container.textContent).toContain('30 хв');
@@ -86,11 +89,11 @@ describe('ActionCard', () => {
     });
 
     expect(onSave).toHaveBeenCalledTimes(1);
-    expect(onSave).toHaveBeenCalledWith({ type: 'run', minutes: 45, note: 'Парк' });
+    expect(onSave).toHaveBeenCalledWith({ type: 'run', minutes: 45, note: 'Парк', done: false });
   });
 
   it('дозволяє перейти до редагування та скасувати зміни', () => {
-    renderCard({ workout: { type: 'strength', minutes: 60, note: 'Ноги' } });
+    renderCard({ workout: { type: 'strength', minutes: 60, note: 'Ноги', done: false } });
 
     act(() => findButton(container, 'Редагувати')?.click());
     expect(container.querySelector('form')).not.toBeNull();
@@ -102,11 +105,34 @@ describe('ActionCard', () => {
   });
 
   it('викликає видалення для запланованого дня', () => {
-    const { onRemove } = renderCard({ workout: { type: 'run', minutes: 40, note: '' } });
+    const { onRemove } = renderCard({
+      workout: { type: 'run', minutes: 40, note: '', done: false },
+    });
 
     act(() => findButton(container, 'Вичеркнути')?.click());
 
     expect(onRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it('показує стан виконання й дозволяє його скасувати', () => {
+    const { onToggleDone } = renderCard({
+      workout: { type: 'run', minutes: 40, note: '', done: true },
+    });
+
+    expect(container.textContent).toContain('Виконано');
+    act(() => findButton(container, 'Скасувати виконання')?.click());
+
+    expect(onToggleDone).toHaveBeenCalledTimes(1);
+  });
+
+  it('позначає невиконане тренування', () => {
+    const { onToggleDone } = renderCard({
+      workout: { type: 'run', minutes: 40, note: '', done: false },
+    });
+
+    act(() => findButton(container, 'Позначити виконаним')?.click());
+
+    expect(onToggleDone).toHaveBeenCalledTimes(1);
   });
 
   it('без обраного дня показує підказку замість форми', () => {

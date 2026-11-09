@@ -17,7 +17,12 @@ export const MIN_MINUTES = 5;
 export const MAX_MINUTES = 240;
 export const MAX_NOTE_LENGTH = 120;
 
-export const defaultWorkout: Workout = { type: 'strength', minutes: DEFAULT_MINUTES, note: '' };
+export const defaultWorkout: Workout = {
+  type: 'strength',
+  minutes: DEFAULT_MINUTES,
+  note: '',
+  done: false,
+};
 
 export const isWorkoutType = (value: unknown): value is WorkoutType =>
   typeof value === 'string' && workoutTypes.includes(value as WorkoutType);
@@ -43,7 +48,9 @@ export const normalizeWorkout = (value: unknown): Workout | null => {
   const note =
     typeof candidate.note === 'string' ? candidate.note.trim().slice(0, MAX_NOTE_LENGTH) : '';
 
-  return { type, minutes, note };
+  const done = candidate.done === true;
+
+  return { type, minutes, note, done };
 };
 
 export const describeWorkout = (workout: Workout) =>

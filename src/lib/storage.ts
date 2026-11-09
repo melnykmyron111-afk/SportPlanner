@@ -8,14 +8,14 @@ export const LEGACY_V1_KEY = 'sportplanner.workouts.v1';
 
 // Демо-набір показує різні типи тренувань, щоб одразу було видно кольори крапок.
 const DEMO_WORKOUTS: Workout[] = [
-  { type: 'strength', minutes: 45, note: '' },
-  { type: 'cardio', minutes: 30, note: '' },
-  { type: 'stretch', minutes: 20, note: '' },
-  { type: 'run', minutes: 40, note: '' },
+  { type: 'strength', minutes: 45, note: '', done: false },
+  { type: 'cardio', minutes: 30, note: '', done: false },
+  { type: 'stretch', minutes: 20, note: '', done: false },
+  { type: 'run', minutes: 40, note: '', done: false },
 ];
 
 // Тренування, у яке перетворюються позначки зі старих версій (там був лише факт «заплановано»).
-const MIGRATED_WORKOUT: Workout = { type: 'other', minutes: DEFAULT_MINUTES, note: '' };
+const MIGRATED_WORKOUT: Workout = { type: 'other', minutes: DEFAULT_MINUTES, note: '', done: false };
 
 /** Демо-набір для місяця, у якому відкрито застосунок (зайві числа коротких місяців відсікаються). */
 export const createSeedPlan = (now: Date): WorkoutPlan => {

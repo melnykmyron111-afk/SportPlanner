@@ -3,7 +3,10 @@ import { loadPlan, readPlan, savePlan, STORAGE_KEY } from '../lib/storage';
 import type { Workout, WorkoutPlan } from '../types';
 
 const isSameWorkout = (left: Workout, right: Workout) =>
-  left.type === right.type && left.minutes === right.minutes && left.note === right.note;
+  left.type === right.type &&
+  left.minutes === right.minutes &&
+  left.note === right.note &&
+  left.done === right.done;
 
 const isSamePlan = (left: WorkoutPlan, right: WorkoutPlan) => {
   const leftKeys = Object.keys(left);
@@ -47,8 +50,21 @@ export const useWorkoutPlan = (now: Date) => {
         type: workout.type,
         minutes: workout.minutes,
         note: workout.note.trim(),
+        done: workout.done,
       },
     }));
+  }, []);
+
+  const toggleWorkoutDone = useCallback((key: string) => {
+    setPlan((current) => {
+      const workout = current[key];
+      if (!workout) return current;
+
+      return {
+        ...current,
+        [key]: { ...workout, done: !workout.done },
+      };
+    });
   }, []);
 
   const removeWorkout = useCallback((key: string) => {
@@ -61,5 +77,5 @@ export const useWorkoutPlan = (now: Date) => {
     });
   }, []);
 
-  return { plan, saveWorkout, removeWorkout };
+  return { plan, saveWorkout, toggleWorkoutDone, removeWorkout };
 };

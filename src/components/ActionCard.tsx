@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { CalendarDays, Check, ChevronRight, CircleMinus, Pencil, Plus } from 'lucide-react';
+import { CalendarDays, Check, ChevronRight, CircleMinus, Pencil, Plus, RotateCcw } from 'lucide-react';
 import { monthNamesGenitive } from '../lib/dates';
 import {
   defaultWorkout,
@@ -16,6 +16,7 @@ type ActionCardProps = {
   workout?: Workout;
   notice: Notice;
   onSave: (workout: Workout) => void;
+  onToggleDone: () => void;
   onRemove: () => void;
 };
 
@@ -25,6 +26,7 @@ const ActionCard = ({
   workout,
   notice,
   onSave,
+  onToggleDone,
   onRemove,
 }: ActionCardProps) => {
   const [editing, setEditing] = useState(false);
@@ -58,6 +60,10 @@ const ActionCard = ({
       <div className="notice success"><Check size={17} /> Тренування додано</div>
     ) : notice === 'updated' ? (
       <div className="notice success"><Check size={17} /> Тренування оновлено</div>
+    ) : notice === 'done' ? (
+      <div className="notice success"><Check size={17} /> Тренування виконано</div>
+    ) : notice === 'undone' ? (
+      <div className="notice removed"><RotateCcw size={16} /> Позначку виконання знято</div>
     ) : notice === 'removed' ? (
       <div className="notice removed"><CircleMinus size={17} /> Тренування прибрано</div>
     ) : null;
@@ -71,30 +77,50 @@ const ActionCard = ({
         {selectedDay === null
           ? 'Натисни на будь-яке число в календарі, щоб запланувати тренування.'
           : workout && !editing
-            ? 'Твоє тренування на цей день. Можна змінити деталі або прибрати його.'
+            ? workout.done
+              ? 'Тренування виконано — так тримати! Можна змінити деталі або прибрати його.'
+              : 'Твоє тренування на цей день. Познач виконання, коли завершиш.'
             : 'Обери тип і тривалість — додай нотатку, якщо потрібно.'}
       </p>
 
       {selectedDay === null ? (
         <div className="hint"><CalendarDays size={17} /> Вибір дати займає секунду</div>
       ) : workout && !editing ? (
-        <div className="workout-summary">
+        <div className={`workout-summary ${workout.done ? 'is-done' : ''}`}>
           <div className="workout-summary-head">
             <span className={`workout-badge type-${workout.type}`}>
               <i className="chip-dot" aria-hidden="true" />
               {workoutTypeLabels[workout.type]}
             </span>
             <span className="workout-duration">{workout.minutes} хв</span>
+            {workout.done && (
+              <span className="done-badge"><Check size={13} /> Виконано</span>
+            )}
           </div>
           {workout.note && <p className="workout-note">{workout.note}</p>}
 
           <div className="action-footer">
-            <button className="insert-button" onClick={startEditing}>
-              <Pencil size={16} /> Редагувати
+            <button
+              className={workout.done ? 'remove-button done-toggle' : 'insert-button done-toggle'}
+              aria-pressed={workout.done}
+              onClick={onToggleDone}
+            >
+              {workout.done ? (
+                <><RotateCcw size={16} /> Скасувати виконання</>
+              ) : (
+                <><Check size={17} /> Позначити виконаним</>
+              )}
             </button>
-            <button className="remove-button" onClick={onRemove}>
-              <CircleMinus size={17} /> Вичеркнути
-            </button>
+
+            <div className="secondary-actions">
+              <button className="ghost-button" onClick={startEditing}>
+                <Pencil size={15} /> Редагувати
+              </button>
+              <button className="ghost-button danger" onClick={onRemove}>
+                <CircleMinus size={15} /> Вичеркнути
+              </button>
+            </div>
+
             {noticeContent}
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { dateKey, monthNames, monthNamesGenitive, weekdays } from '../lib/dates';
 import { workoutTypeLabels } from '../lib/workouts';
 import type { WorkoutPlan } from '../types';
@@ -43,17 +43,18 @@ const CalendarCard = ({
 
         return day ? (
           <button
-            className={`day ${workout ? 'planned' : ''} ${selectedDay === day ? 'selected' : ''}`}
+            className={`day ${workout ? 'planned' : ''} ${workout?.done ? 'done' : ''} ${selectedDay === day ? 'selected' : ''}`}
             key={`${year}-${month}-${day}`}
             onClick={() => onSelectDay(day)}
             aria-label={
               workout
-                ? `${day} ${monthNamesGenitive[month]} — ${workoutTypeLabels[workout.type]}, ${workout.minutes} хв`
+                ? `${day} ${monthNamesGenitive[month]} — ${workoutTypeLabels[workout.type]}, ${workout.minutes} хв${workout.done ? ', виконано' : ''}`
                 : `${day} ${monthNamesGenitive[month]}`
             }
             aria-pressed={selectedDay === day}
           >
             {day}
+            {workout?.done && <Check className="day-check" size={10} strokeWidth={3} aria-hidden="true" />}
             {workout && <span className={`day-dot type-${workout.type}`} />}
           </button>
         ) : <span className="day empty" key={`empty-${index}`} />;

@@ -10,10 +10,11 @@ import {
 
 describe('normalizeWorkout', () => {
   it('лишає коректне тренування без змін', () => {
-    expect(normalizeWorkout({ type: 'cardio', minutes: 30, note: 'Інтервали' })).toEqual({
+    expect(normalizeWorkout({ type: 'cardio', minutes: 30, note: 'Інтервали', done: true })).toEqual({
       type: 'cardio',
       minutes: 30,
       note: 'Інтервали',
+      done: true,
     });
   });
 
@@ -22,7 +23,14 @@ describe('normalizeWorkout', () => {
       type: 'other',
       minutes: DEFAULT_MINUTES,
       note: '',
+      done: false,
     });
+  });
+
+  it('вважає виконаним лише явне `true`', () => {
+    expect(normalizeWorkout({ type: 'run', minutes: 40, done: 'yes' })?.done).toBe(false);
+    expect(normalizeWorkout({ type: 'run', minutes: 40, done: 1 })?.done).toBe(false);
+    expect(normalizeWorkout({ type: 'run', minutes: 40, done: true })?.done).toBe(true);
   });
 
   it('замінює невідомий тип на «інше»', () => {
@@ -58,6 +66,6 @@ describe('normalizeWorkout', () => {
 
 describe('describeWorkout', () => {
   it('описує тип і тривалість для скрінрідера', () => {
-    expect(describeWorkout({ type: 'run', minutes: 40, note: '' })).toBe('Біг · 40 хв');
+    expect(describeWorkout({ type: 'run', minutes: 40, note: '', done: false })).toBe('Біг · 40 хв');
   });
 });
