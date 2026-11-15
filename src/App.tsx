@@ -6,7 +6,7 @@ import Topbar from './components/Topbar';
 import { useWorkoutPlan } from './hooks/useWorkoutPlan';
 import { useToday } from './hooks/useToday';
 import { dateKey, getCalendarDays } from './lib/dates';
-import { countDoneInMonth, countInMonth, currentStreak, monthProgress } from './lib/stats';
+import { countDoneInMonth, countInMonth, currentStreak, monthProgress, weekSummary } from './lib/stats';
 import { seasonForMonth } from './lib/theme';
 import type { Notice, Workout } from './types';
 
@@ -65,6 +65,7 @@ function App() {
   const doneCount = countDoneInMonth(plan, year, month);
   const streak = currentStreak(plan, today);
   const progress = monthProgress(plan, year, month);
+  const weekly = weekSummary(plan, today);
 
   return (
     <main className="app-shell" data-season={seasonForMonth(month)}>
@@ -112,6 +113,17 @@ function App() {
           <div className="stat"><span className="stat-value">{streak}</span><span className="stat-label">серія днів</span></div>
           <div className="stat"><span className="stat-value">{progress}%</span><span className="stat-label">до цілі</span></div>
         </div>
+
+        <section className="weekly-summary" aria-label="Підсумок поточного тижня">
+          <div>
+            <span className="card-label">ЦЕЙ ТИЖДЕНЬ</span>
+            <p className="weekly-summary-count">{weekly.completed} з {weekly.planned} тренувань виконано</p>
+          </div>
+          <div className="weekly-summary-time">
+            <strong>{weekly.completedMinutes}</strong>
+            <span>хвилин виконано</span>
+          </div>
+        </section>
 
         <div className="bottom-note" id="tips">
           <span className="note-check"><Check size={14} /></span>

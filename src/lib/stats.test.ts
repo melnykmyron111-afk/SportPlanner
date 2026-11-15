@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { dateKey } from './dates';
-import { countDoneInMonth, countInMonth, currentStreak, monthProgress } from './stats';
+import { countDoneInMonth, countInMonth, currentStreak, monthProgress, weekSummary } from './stats';
 import type { WorkoutPlan } from '../types';
 
 const entry = (done: boolean) => ({ type: 'strength' as const, minutes: 45, note: '', done });
@@ -27,6 +27,32 @@ describe('countDoneInMonth', () => {
   it('рахує лише виконані тренування', () => {
     expect(countDoneInMonth(plan, 2026, 10)).toBe(5);
     expect(countDoneInMonth(plan, 2026, 9)).toBe(0);
+  });
+});
+
+describe('weekSummary', () => {
+  it('рахує заплановані та виконані тренування з понеділка по неділю', () => {
+    const weeklyPlan: WorkoutPlan = {
+      '2026-11-08': { ...entry(true), minutes: 30 },
+      '2026-11-09': { ...entry(true), minutes: 45 },
+      '2026-11-10': { ...entry(false), minutes: 60 },
+      '2026-11-15': { ...entry(true), minutes: 20 },
+      '2026-11-16': { ...entry(true), minutes: 30 },
+    };
+
+    expect(weekSummary(weeklyPlan, new Date(2026, 10, 15))).toEqual({
+      planned: 3,
+      completed: 2,
+      completedMinutes: 65,
+    });
+  });
+
+  it('повертає нулі, якщо на поточний тиждень тренувань немає', () => {
+    expect(weekSummary({}, new Date(2026, 10, 9))).toEqual({
+      planned: 0,
+      completed: 0,
+      completedMinutes: 0,
+    });
   });
 });
 

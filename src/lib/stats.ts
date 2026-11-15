@@ -19,6 +19,35 @@ export const countDoneInMonth = (plan: WorkoutPlan, year: number, month: number)
   return count;
 };
 
+/** Підсумок запланованих і виконаних тренувань за поточний тиждень (понеділок–неділя). */
+export const weekSummary = (
+  plan: WorkoutPlan,
+  today: Date,
+): { planned: number; completed: number; completedMinutes: number } => {
+  const cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const daysSinceMonday = (cursor.getDay() + 6) % 7;
+  cursor.setDate(cursor.getDate() - daysSinceMonday);
+
+  let planned = 0;
+  let completed = 0;
+  let completedMinutes = 0;
+
+  for (let day = 0; day < 7; day++) {
+    const workout = plan[dateKey(cursor.getFullYear(), cursor.getMonth(), cursor.getDate())];
+    if (workout) {
+      planned += 1;
+      if (workout.done) {
+        completed += 1;
+        completedMinutes += workout.minutes;
+      }
+    }
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return { planned, completed, completedMinutes };
+};
+
 /**
  * Серія послідовних виконаних днів, що тягнеться назад від сьогодні.
  * `maxGap` дозволяє пропустити кілька днів (відпочинок), не обриваючи серію.
