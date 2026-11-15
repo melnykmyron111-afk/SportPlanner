@@ -5,7 +5,7 @@ import CalendarCard from './components/CalendarCard';
 import Topbar from './components/Topbar';
 import { useWorkoutPlan } from './hooks/useWorkoutPlan';
 import { useToday } from './hooks/useToday';
-import { dateKey, getCalendarDays } from './lib/dates';
+import { dateKey, getCalendarDays, monthNamesGenitive } from './lib/dates';
 import { countDoneInMonth, countInMonth, currentStreak, monthProgress, weekSummary } from './lib/stats';
 import { seasonForMonth } from './lib/theme';
 import type { Notice, Workout } from './types';
@@ -65,7 +65,21 @@ function App() {
   const doneCount = countDoneInMonth(plan, year, month);
   const streak = currentStreak(plan, today);
   const progress = monthProgress(plan, year, month);
-  const weekly = weekSummary(plan, today);
+  const weeklyAnchor = selectedDay === null ? today : new Date(year, month, selectedDay);
+  const weekly = weekSummary(plan, weeklyAnchor);
+  const weekStart = new Date(
+    weeklyAnchor.getFullYear(),
+    weeklyAnchor.getMonth(),
+    weeklyAnchor.getDate(),
+  );
+  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const weekRange =
+    weekStart.getMonth() === weekEnd.getMonth() &&
+    weekStart.getFullYear() === weekEnd.getFullYear()
+      ? `${weekStart.getDate()}–${weekEnd.getDate()} ${monthNamesGenitive[weekEnd.getMonth()]}`
+      : `${weekStart.getDate()} ${monthNamesGenitive[weekStart.getMonth()]} – ${weekEnd.getDate()} ${monthNamesGenitive[weekEnd.getMonth()]}`;
 
   return (
     <main className="app-shell" data-season={seasonForMonth(month)}>
@@ -114,14 +128,14 @@ function App() {
           <div className="stat"><span className="stat-value">{progress}%</span><span className="stat-label">до цілі</span></div>
         </div>
 
-        <section className="weekly-summary" aria-label="Підсумок поточного тижня">
+        <section className="weekly-summary" aria-label={`Підсумок за тиждень ${weekRange}`}>
           <div>
-            <span className="card-label">ЦЕЙ ТИЖДЕНЬ</span>
+            <span className="card-label">ТИЖДЕНЬ {weekRange}</span>
             <p className="weekly-summary-count">{weekly.completed} з {weekly.planned} тренувань виконано</p>
           </div>
           <div className="weekly-summary-time">
-            <strong>{weekly.completedMinutes}</strong>
-            <span>хвилин виконано</span>
+            <strong>{weekly.plannedMinutes}</strong>
+            <span>хвилин заплановано</span>
           </div>
         </section>
 

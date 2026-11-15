@@ -23,29 +23,29 @@ export const countDoneInMonth = (plan: WorkoutPlan, year: number, month: number)
 export const weekSummary = (
   plan: WorkoutPlan,
   today: Date,
-): { planned: number; completed: number; completedMinutes: number } => {
+): { planned: number; completed: number; plannedMinutes: number } => {
   const cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const daysSinceMonday = (cursor.getDay() + 6) % 7;
   cursor.setDate(cursor.getDate() - daysSinceMonday);
 
   let planned = 0;
   let completed = 0;
-  let completedMinutes = 0;
+  let plannedMinutes = 0;
 
   for (let day = 0; day < 7; day++) {
     const workout = plan[dateKey(cursor.getFullYear(), cursor.getMonth(), cursor.getDate())];
     if (workout) {
       planned += 1;
+      plannedMinutes += workout.minutes;
       if (workout.done) {
         completed += 1;
-        completedMinutes += workout.minutes;
       }
     }
 
     cursor.setDate(cursor.getDate() + 1);
   }
 
-  return { planned, completed, completedMinutes };
+  return { planned, completed, plannedMinutes };
 };
 
 /**

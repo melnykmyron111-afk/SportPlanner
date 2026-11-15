@@ -43,7 +43,7 @@ describe('weekSummary', () => {
     expect(weekSummary(weeklyPlan, new Date(2026, 10, 15))).toEqual({
       planned: 3,
       completed: 2,
-      completedMinutes: 65,
+      plannedMinutes: 125,
     });
   });
 
@@ -51,7 +51,21 @@ describe('weekSummary', () => {
     expect(weekSummary({}, new Date(2026, 10, 9))).toEqual({
       planned: 0,
       completed: 0,
-      completedMinutes: 0,
+      plannedMinutes: 0,
+    });
+  });
+
+  it('підсумовує тиждень, у якому лежить передана дата', () => {
+    const decemberPlan: WorkoutPlan = {
+      '2026-12-18': { ...entry(true), minutes: 30 },
+      '2026-12-19': { ...entry(false), minutes: 45 },
+      '2026-12-21': { ...entry(true), minutes: 60 },
+    };
+
+    expect(weekSummary(decemberPlan, new Date(2026, 11, 18))).toEqual({
+      planned: 2,
+      completed: 1,
+      plannedMinutes: 75,
     });
   });
 });
